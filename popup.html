@@ -1,0 +1,97 @@
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=win-1251">
+<style>
+    body {
+        min-width: 357px;
+        overflow-x: hidden;
+    }
+</style>
+<script src="lyrics.wikia.com.js"></script>
+<script src="alloflyrics.com.js"></script>
+<script>
+    function init(){
+      if(localStorage.text){
+        document.getElementById('text').innerHTML = localStorage.text;
+      }
+      if(localStorage.title){
+        document.getElementById("title").innerHTML = localStorage.title;
+      }
+    }
+
+    var popup = {}
+    var searchers = [new LyricsWikiaComSearcher(), new AlloflyricsComSearcher()];
+    var cntFinished = 0;
+
+    function search(){
+	var artistName = document.getElementById('artistName').value;
+	var songName = document.getElementById('songName').value;
+	cntFinished = 0;
+	for(var i = 0; i<searchers.length; i++){
+	   searchers[i].search(artistName, songName);
+	}
+    }
+
+    function onSearch(){
+       if (event.keyCode == 13){
+          search();
+       }
+    }
+
+    function clearSong(){
+       document.getElementById("text").innerHTML = "";
+       document.getElementById("title").innerHTML = "";
+    };
+
+    function showLastFmRow(){
+       console.log('Offer to connect with account or to disconnect');
+    }
+
+    popup.onNotFound = function(){
+       cntFinished++;
+       if(cntFinished >= searchers.length){
+          clearSong();
+	  document.getElementById("info").style.display = "block";
+          document.getElementById("info").innerHTML = "Не найдено";
+       }
+    };
+
+    popup.onFound = function(){
+	localStorage.title = document.getElementById("title").innerHTML;
+	localStorage.text = document.getElementById("text").innerHTML;
+	document.getElementById("info").style.display = "none";
+    }
+
+    popup.onStartSearch = function(){
+       document.getElementById("info").style.display = "block";
+       document.getElementById("info").innerHTML = "Поиск ...";
+    };
+</script>
+</head>
+<body onload="init();">
+<table>
+<tr>
+
+   <td><label for="artistName">Исполнитель:</label></td>
+   <td><label for="songName">Название:</label></td>
+   <td onclick="showLastFmRow()">Last.fm status icon</td>
+</tr>
+<tr>
+   <td><input type="text" id="artistName" onkeydown="onSearch()"/></td>
+   <td><input type="text" id="songName" onkeydown="onSearch()"/></td>
+   <td></td>
+</tr>
+<tr id="lastFmRow">
+   <td><label for="lastFmLogin" >Введите свой Last.fm логин:</label></td>
+   <td><input type="text" id="lastFmLogin"></td>
+   <td><a href="javascript:void(0)" > Connect </a></td>
+</tr>
+<tr>
+   <td><div id="info" style="display:none">Поиск ...</div></td>
+   <td></td>
+</tr>
+</table>
+
+<h3 id="title"></h3>
+<div id="text">
+</div>
+</body>
